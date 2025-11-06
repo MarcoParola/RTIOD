@@ -41,7 +41,7 @@ if len(argv) == 1:  # Use the default input and output directories if no argumen
     ref_file = './valid_targets.json'
     output_dir = './output/'
 else:
-    input_dir = argv[1]
+    pred_file = argv[1]
     ref_file = argv[2]
     output_dir = argv[3]
     # Create the output directory, if it does not already exist and open output files
