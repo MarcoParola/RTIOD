@@ -76,30 +76,6 @@ def generate_target(uids, target_json):
     template = collate_dicts(entries)
     return template
 
-def generate_random(uids):
-    p = Pool(__THREAD_COUNT__)
-    entries = p.map(_generate_random, uids)
-    template = collate_dicts(entries)
-    return template
-
-def _generate_random(uid):
-    # Read all image UIDs and make empty template
-    content = {
-        "boxes": [],
-        "scores": [],
-        "labels": [],
-    }
-    # fill json with random boxes and labels
-    for _ in range(random.randint(0, 10)): # 0-10 random objects
-        dummy_confidence = random.uniform(0.5, 1.0) # assuming a model with a 50% internal confidence threshold
-        dummy_label = random.randint(0,4)
-        dummy_box = random_bbox(388, 288, dummy_label)
-        content["boxes"].append(dummy_box)
-        content["scores"].append(dummy_confidence)
-        content["labels"].append(dummy_label)
-
-    return {uid: content}
-
 def _generate_target(uid_data):
     # Read all image UIDs and make empty template
     uid, anns = next(iter(uid_data.items()))
@@ -140,8 +116,6 @@ if __name__ == "__main__":
     # Format submission template
     if args.get_targets:
         template = generate_target(uids, args.input_json)
-    elif args.random_samples:
-        template = generate_random(uids)
     else:
         template = generate_template(uids)
 
