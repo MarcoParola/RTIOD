@@ -10,7 +10,7 @@ Usage:
     python challenge_evaluator.py predictions.json valid_targets.json ./output/
 """
 
-
+import argparse
 import os
 import json
 import torch
@@ -36,33 +36,37 @@ intervals = {
 
 
 #### INPUT/OUTPUT: Get input and output directory names
-if len(argv) == 1:  # Use the default input and output directories if no arguments are provided
-    pred_file = './predictions.json'
-    ref_file = './valid_targets.json'
-    output_dir = './output/'
-else:
-    pred_file = argv[1]
-    ref_file = argv[2]
-    output_dir = argv[3]
-    # Create the output directory, if it does not already exist and open output files
-os.makedirs(output_dir, exist_ok=True)
+parser = argparse.ArgumentParser(description="Robust Thermal-Image Object Detection Challenge Evaluator Script")
+parser.add_argument('pred_file', type=str, help='Path to the predictions JSON file')
+parser.add_argument('ref_file', type=str, help='Path to the reference/target JSON file')
+parser.add_argument('--output_dir',default='./output/', type=str, help='Directory to save the output scores.json file')
+args = parser.parse_args()
+os.makedirs(args.output_dir, exist_ok=True)
 
 print("########## Loading submission and target:")
-submission = load_template(pred_file)
-targets = load_template(ref_file)
+submission = load_template(args.pred_file)
+targets = load_template(args.ref_file)
 
 print("########## Parsing submission:")
 # Assert that templates match
-if len(set(submission.keys()) ^ set(targets.keys()))!=0:
-    print("Eroneous Entries:")
-    u_pred = set(submission.keys()) - set(targets.keys())
-    print(u_pred)
-    print("Missing Entries:")
-    u_targ = set(targets.keys()) - set(submission.keys())
-    print(u_targ)
-    raise ValueError("ERROR: Submitted template and Target template have inconsistent UIDs (See above).")
-else:
-    print("UUID Key pairings validated")
+u_pred = set(submission.keys()) - set(targets.keys())
+u_targ = set(targets.keys()) - set(submission.keys())
+if u_pred:
+    print("Submission contains entries not in the target file (THESE WILL BE IGNORED).")
+    print(f"Keys in submission but not in targets: {u_pred}")
+if u_targ:
+    print("\nSubmission is missing entries present in the target file (THESE WILL BE SUBSTITUTED WITH EMPTY PREDICTIONS).")
+    print(f"Keys in targets but not in submission: {u_targ}")
+    for uid in u_targ:
+        submission[uid] = {
+            "boxes": [],
+            "scores": [],
+            "labels": []
+            }
+print("UID Key pairings validated / corrected")
+print(f"Valid entries in submission: {len(submission)-len(u_pred)}")
+print(f"Submission entries ignored: {len(u_pred)}")
+print(f"Empty Submission entries added: {len(u_targ)}")
 
 print("Converting to tensors")
 # Convert Json elements to apropriate torch tensors
@@ -135,6 +139,6 @@ scores["global_map_bal"] = float((1-scores["global_map_con"]) * scores["global_m
 # Write scores to file
 print("Saving scores to file")
 print(scores)
-os.makedirs(output_dir, exist_ok=True)
-with open(os.path.join(output_dir, 'scores.json'), 'w') as score_file:
+os.makedirs(args.output_dir, exist_ok=True)
+with open(os.path.join(args.output_dir, 'scores.json'), 'w') as score_file:
     score_file.write(json.dumps(scores, indent=4))
