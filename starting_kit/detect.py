@@ -29,7 +29,7 @@ def main(args):
         print(f'\n\nProcessing image {i+1}/{len(dataset)}')
         imgPath = dataset.get_img_path(i)
         image = imgPath
-        results = model.predict(source=image, imgsz=160, conf=0.25)
+        results = model.predict(source=image, imgsz=320, conf=0.01)
         #print(results)
         result = results[0]
         boxes = result.boxes.xyxy
@@ -42,10 +42,6 @@ def main(args):
         boxes = boxes.cpu().numpy().tolist()
         conf = conf.cpu().numpy().tolist()
         labels = labels.cpu().numpy().tolist()
-
-        # print(boxes)
-        # print(conf)
-        # print(labels)
 
         img_id_str = str(dataset.ids[i])
         if img_id_str not in submission:
