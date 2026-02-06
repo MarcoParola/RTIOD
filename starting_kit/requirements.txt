@@ -10,3 +10,4 @@ wandb
 seaborn
 huggingface_hub
 ultralytics
+torchmetrics
