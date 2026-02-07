@@ -63,9 +63,10 @@ def convert_split_to_mot(dataset, output_dir):
         for ann in annotations:
             uid = ann["uid"]              # object id
             x, y, w, h = ann["bbox"]      # COCO bbox (absolute pixels)
+            category_id = ann["category_id"]
 
             sequences[seq_name].append(
-                (frame_id, uid, x, y, w, h)
+                (frame_id, uid, category_id, x, y, w, h)
             )
 
     # Write MOT files
@@ -74,10 +75,12 @@ def convert_split_to_mot(dataset, output_dir):
 
         mot_file = os.path.join(output_dir, f"{seq_name}.txt")
         with open(mot_file, "w") as f:
-            for frame, uid, x, y, w, h in entries:
-                f.write(
-                    f"{frame},{uid},{x},{y},{w},{h},-1,-1,-1,-1\n"
-                )
+            for frame, uid, category_id, x, y, w, h in entries:
+                    # Write in MOTChallenge expected column order:
+                    # frame, id, x, y, width, height, -1, -1, -1, -1
+                    f.write(
+                        f"{frame},{uid},{x},{y},{w},{h},-1,-1,-1,-1\n"
+                    )
 
 
 @hydra.main(config_path="../config", config_name="config", version_base="1.3")
