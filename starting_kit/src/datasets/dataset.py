@@ -9,7 +9,7 @@ from torch.utils.data.dataset import Dataset
 import src.utils.transforms as T
 import hydra
 
-
+'''
 class COCODataset(Dataset):
     def __init__(self, root: str, annotation: str, numClass: int):
         self.root = root
@@ -90,6 +90,61 @@ def load_datasets(args):
     collate_fn = collate_fn_coco
 
     return train_dataset, val_dataset, test_dataset, collate_fn
+'''
+
+class COCODataset():
+    def __init__(self, root: str, annotation: str, numClass: int):
+        self.root = root
+        self.coco = COCO(annotation)
+        self.ids = list(self.coco.imgs.keys())
+        self.numClass = numClass
+        self.transforms = T.Compose([T.ToTensor()])
+        self.newIndex = {}
+        classes = []
+        for i, (k, v) in enumerate(self.coco.cats.items()):
+            self.newIndex[k] = i
+            classes.append(v['name'])
+
+    def get_item_for_yolo(self, idx: int) -> Tuple[Tensor, dict]:
+        imgID = self.ids[idx]
+        imgInfo = self.coco.imgs[imgID]        
+        imgPath = imgInfo['file_name']
+        annotations = self.loadAnnotations(imgID, imgInfo['width'], imgInfo['height'])
+        if len(annotations) == 0:
+            targets = {
+                'boxes': torch.zeros(1, 4, dtype=torch.float32),
+                'labels': torch.as_tensor([self.numClass], dtype=torch.int64),}
+        else:
+            targets = {
+                'boxes': torch.as_tensor(annotations[..., :-1], dtype=torch.float32),
+                'labels': torch.as_tensor(annotations[..., -1], dtype=torch.int64),}
+
+        return imgPath, targets
+
+
+    def loadAnnotations(self, imgID: int, imgWidth: int, imgHeight: int) -> np.ndarray:
+        ans = []
+        for annotation in self.coco.imgToAnns[imgID]:
+            cat = self.newIndex[annotation['category_id']]
+            bbox = annotation['bbox']
+            bbox = [val / imgHeight if i % 2 else val / imgWidth for i, val in enumerate(bbox)]
+            ans.append(bbox + [cat])
+
+        return np.asarray(ans)
+
+
+def load_datasets(args):
+    num_classes = args.numClass
+    data_folder = args.dataDir
+    train_file = args.trainAnnFile
+    val_file = args.valAnnFile
+    data_folder = os.path.join(args.currentDir, data_folder)
+    train_file = os.path.join(args.currentDir, train_file)
+    val_file = os.path.join(args.currentDir, val_file)
+
+    train_dataset = COCODataset(data_folder, train_file, num_classes)
+    val_dataset = COCODataset(data_folder, val_file, num_classes)
+    return train_dataset, val_dataset
 
 # TEST MAIN
 @hydra.main(config_path='../../config', config_name='config', version_base="1.3")

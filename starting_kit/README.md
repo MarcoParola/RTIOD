@@ -37,13 +37,16 @@ Download the frames and annotations from the official HuggingFace dataset reposi
 ```sh
 python -m scripts.download_LTDv2
 unzip data/frames.zip -d data/
-python -m scripts.coco_to_yolo
 ```
 
 
 
-## Usage
+## Object Detection - Usage
 
+Convert the COCO dataset format into the YOLO one.
+```sh
+python -m scripts.coco_to_yolo
+```
 
 You can use this repository to **train**, **evaluate**, and **generate submissions** for your models, following the provided templates for both validation and test phases.
 
@@ -63,4 +66,17 @@ The generated files will be stored in a folder named `sumission/`:
 ```sh
 python detect.py submission.type=val
 python detect.py submission.type=test
+```
+
+## Object Tracking - Usage
+
+Convert the COCO dataset format into the MOTChallenge one. You will find the resulting annotations in `./data/tracking/`
+```sh
+python -m scripts.coco_to_motchallenge
+```
+
+You can use the object detection model previously trained to precompute frame-by-frame prediction that will be used during the next steps by tracking algorithms.
+```sh
+python precompute_detection.py submission.type=val
+python precompute_detection.py submission.type=test
 ```

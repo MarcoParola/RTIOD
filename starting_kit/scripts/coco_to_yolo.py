@@ -8,7 +8,9 @@ from torch import Tensor
 import src.utils.transforms as T
 import hydra
 
+from src.datasets.dataset import load_datasets
 
+'''
 class COCODataset():
     def __init__(self, root: str, annotation: str, numClass: int):
         self.root = root
@@ -62,7 +64,7 @@ def load_datasets(args):
     train_dataset = COCODataset(data_folder, train_file, num_classes)
     val_dataset = COCODataset(data_folder, val_file, num_classes)
     return train_dataset, val_dataset
-
+'''
 
 @hydra.main(config_path='../config', config_name='config', version_base="1.3")
 def main(args):

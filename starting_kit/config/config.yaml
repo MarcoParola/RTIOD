@@ -7,7 +7,8 @@ seed: 42
 numClass: 4
 currentDir: ${hydra:runtime.cwd}
 
-modelCheckpoint: yolov8m.pt  # checkpoints/last.pt
+#modelCheckpoint: yolov8m.pt  
+modelCheckpoint: checkpoints/best.pt
 
 submission:
   type: 'val' # 'val' or 'test'
@@ -32,3 +33,7 @@ transform: True
 
 # MARK: - miscellaneous
 outputDir: ${hydra:runtime.cwd}/checkpoint
+
+tracking:
+  trackingData: ${hydra:runtime.cwd}/data/tracking
+  precomputedDetectionFolder: ${hydra:runtime.cwd}/data/detection

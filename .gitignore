@@ -387,6 +387,7 @@ checkpoint/
 data/
 wandb/
 outputs/
+output/
 *.bak
 *.pt
 runs/
