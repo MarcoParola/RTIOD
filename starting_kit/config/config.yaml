@@ -36,4 +36,6 @@ outputDir: ${hydra:runtime.cwd}/checkpoint
 
 tracking:
   trackingData: ${hydra:runtime.cwd}/data/tracking
-  precomputedDetectionFolder: ${hydra:runtime.cwd}/data/detection
+  precomputedDetectionFolder: detection
+  trackingPredictionFolder: ${hydra:runtime.cwd}/outputs/tracking
+  tracker: identity # TODO list the tracker options
