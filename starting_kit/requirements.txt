@@ -11,3 +11,4 @@ seaborn
 huggingface_hub
 ultralytics
 torchmetrics
+motmetrics

@@ -80,3 +80,13 @@ You can use the object detection model previously trained to precompute frame-by
 python precompute_detection.py submission.type=val
 python precompute_detection.py submission.type=test
 ```
+
+Run a tracking algorithm among the available ones (`identity`, `iou`, `sort`, `bytetrack`, `ocsort`, `deepsort`):
+
+```sh
+python run_tracking.py tracking.tracker=identity submission.type=val
+```
+
+```sh
+python run_tracking.py tracking.tracker=identity submission.type=val
+```
