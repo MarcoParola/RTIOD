@@ -5,6 +5,7 @@ import torch
 
 from torch.utils.data import WeightedRandomSampler
 import numpy as np
+import pandas as pd
 
 def cast2Float(x):
     if isinstance(x, list):
@@ -84,4 +85,49 @@ def load_weights(args, model, architecture, weight_path, device):
 
     return model
 
+
+def iou(boxA, boxB):
+    xA = max(boxA[0], boxB[0])
+    yA = max(boxA[1], boxB[1])
+    xB = min(boxA[0] + boxA[2], boxB[0] + boxB[2])
+    yB = min(boxA[1] + boxA[3], boxB[1] + boxB[3])
+
+    inter = max(0, xB - xA) * max(0, yB - yA)
+    if inter <= 0:
+        return 0.0
+
+    union = boxA[2] * boxA[3] + boxB[2] * boxB[3] - inter
+    return inter / union
+
+def load_motchallenge(path: str) -> pd.DataFrame:
+    if not path or not os.path.exists(path):
+        return pd.DataFrame()
+
+    rows = []
+    with open(path, "r") as fh:
+        for line in fh:
+            parts = line.strip().split(',')
+            if len(parts) < 6:
+                continue
+            try:
+                frame = int(parts[0])
+                oid = int(parts[1])
+                x, y, w, h = map(float, parts[2:6])
+            except ValueError:
+                continue
+
+            rows.append({
+                "frame": frame,
+                "id": oid,
+                "X": x,
+                "Y": y,
+                "Width": w,
+                "Height": h,
+            })
+
+    if not rows:
+        return pd.DataFrame()
+
+    df = pd.DataFrame(rows)
+    return df.set_index(["frame", "id"]).sort_index()
 

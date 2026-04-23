@@ -29,7 +29,7 @@ def main(args):
     precomputedDetFolder = os.path.join(
         args.dataDir, 
         args.tracking.precomputedDetectionFolder,
-        args.submission.type + '_' + model_name)
+        args.submission.type + '_' + model_name + '_th' + str(args.confidence_threshold).replace('.','_'))
 
     os.makedirs(precomputedDetFolder, exist_ok=True)
 
@@ -47,7 +47,7 @@ def main(args):
         seq_name = parse_sequence_name(file_name)
         frame_id = parse_frame_id(file_name)
         
-        results = model(img_path, imgsz=320, conf=0.01, verbose=False)[0]
+        results = model(img_path, imgsz=320, conf=args.confidence_threshold, verbose=False)[0]
 
         if results.boxes is None:
             continue

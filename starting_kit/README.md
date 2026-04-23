@@ -81,7 +81,7 @@ python precompute_detection.py submission.type=val
 python precompute_detection.py submission.type=test
 ```
 
-Run a tracking algorithm among the available ones (`identity`, `iou`, `sort`, `bytetrack`, `ocsort`, `deepsort`):
+Run a tracking algorithm among the available ones (`identity`, `iou`, `sort`, `ocsort`, `bytetrack`, `deepsort`):
 
 ```sh
 python run_tracking.py tracking.tracker=identity submission.type=val

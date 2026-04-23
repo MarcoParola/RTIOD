@@ -10,7 +10,7 @@ def evaluate(args):
     gt_dir = os.path.join(args.tracking.trackingData, args.submission.type)
     pred_dir = os.path.join(
         args.tracking.trackingPredictionFolder, 
-        args.tracking.tracker + '_' + model_name,
+        args.tracking.tracker + '_' + model_name + '_th' + str(args.confidence_threshold).replace('.','_'),
         args.submission.type)
         
     per_seq_summaries = []
@@ -24,13 +24,13 @@ def evaluate(args):
         pred_file = os.path.join(pred_dir, seq_file)
 
         if not os.path.exists(pred_file):
-            print(f"Missing prediction for {seq_file}")
+            #print(f"Missing prediction for {seq_file}")
             continue
 
         summary, acc = compute_mot_metrics(gt_file, pred_file)
         seq_name = os.path.splitext(seq_file)[0]
-        print(f"\nSequence: {seq_file}")
-        print(summary)
+        #print(f"\nSequence: {seq_file}")
+        #print(summary)
 
         # collect for overall aggregation
         per_seq_summaries.append(summary)

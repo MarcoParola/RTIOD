@@ -12,11 +12,11 @@ def run_tracking(args):
     det_dir = os.path.join(
         args.dataDir, 
         args.tracking.precomputedDetectionFolder,
-        args.submission.type + '_' + model_name)
+        args.submission.type + '_' + model_name + '_th' + str(args.confidence_threshold).replace('.','_'))
 
     output_dir = os.path.join(
         args.tracking.trackingPredictionFolder, 
-        args.tracking.tracker + '_' + model_name,
+        args.tracking.tracker + '_' + model_name + '_th' + str(args.confidence_threshold).replace('.','_'),
         args.submission.type)
     os.makedirs(output_dir, exist_ok=True)
     

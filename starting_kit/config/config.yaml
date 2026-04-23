@@ -24,6 +24,9 @@ batchSize: 16
 epochs: 100
 patience: 10
 
+# MARK - inference
+confidence_threshold: 0.2
+
 # MARK: - dataset
 dataDir: ${hydra:runtime.cwd}/data/
 trainAnnFile: ${hydra:runtime.cwd}/data/Train.json
@@ -33,7 +36,9 @@ transform: True
 
 # MARK: - miscellaneous
 outputDir: ${hydra:runtime.cwd}/checkpoint
+clip: ""
 
+# TRACKING
 tracking:
   trackingData: ${hydra:runtime.cwd}/data/tracking
   precomputedDetectionFolder: detection
